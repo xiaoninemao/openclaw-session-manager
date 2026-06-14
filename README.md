@@ -2,6 +2,12 @@
 
 一个本地运行的 OpenClaw 会话管理器，提供明亮简洁的管理界面。
 
+## 项目背景
+
+OpenClaw 目前缺少一个简洁直观的会话管理界面，查找、重命名或删除会话并不方便。
+如果你不想为了管理会话安装多个第三方 OpenClaw 版本，或希望保持现有 OpenClaw
+环境简洁纯净，可以使用本项目集中管理本机会话。
+
 <p align="center">
   <img src="public/openclaw-logo.svg" width="96" alt="OpenClaw logo">
 </p>
