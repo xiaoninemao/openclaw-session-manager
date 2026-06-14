@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OpenClaw 会话管理器</title>
+  <link rel="icon" type="image/svg+xml" href="openclaw-logo.svg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <header class="hero">
+      <div class="brand"><div class="logo"><img src="openclaw-logo.svg" alt="OpenClaw"></div><div><p class="eyebrow">OPENCLAW · LOCAL</p><h1>会话管理器</h1><p id="summary">正在连接本机 OpenClaw...</p></div></div>
+      <div class="header-actions"><button id="refresh" class="icon-button" title="刷新">↻</button><button id="create" class="primary"><span>＋</span> 新增会话</button></div>
+    </header>
+    <section id="alert" class="alert hidden"></section>
+    <section class="overview"><div class="stat"><span>会话总数</span><strong id="sessionCount">—</strong></div><div class="stat"><span>Agent 数量</span><strong id="agentCount">—</strong></div><div class="stat"><span>累计 Tokens</span><strong id="tokenCount">—</strong></div></section>
+    <section class="workspace"><div class="toolbar"><div class="search-wrap"><span>⌕</span><input id="search" type="search" placeholder="搜索名称、会话 key、模型或渠道"></div><select id="agent"><option value="">全部 Agent</option></select></div><section id="sessions" class="sessions"></section></section>
+  </main>
+  <dialog id="createDialog"><form method="dialog"><h2>新增会话</h2><label>显示名称<input id="newLabel" maxlength="64" placeholder="例如：开发助手"></label><label>Agent ID<input id="newAgent" value="main" required></label><div class="dialog-actions"><button value="cancel">取消</button><button id="confirmCreate" value="default" class="primary">创建</button></div></form></dialog>
+  <dialog id="renameDialog"><form method="dialog"><h2>更改会话名称</h2><label>显示名称<input id="renameLabel" maxlength="64" placeholder="留空可清除名称"></label><div class="dialog-actions"><button value="cancel">取消</button><button id="confirmRename" value="default" class="primary">保存</button></div></form></dialog>
+  <script src="app.js"></script>
+</body>
+</html>
