@@ -1,95 +1,199 @@
+<div align="center">
+
+<img src="public/openclaw-logo.svg" width="104" alt="OpenClaw Session Manager logo">
+
 # OpenClaw Session Manager
 
-一个本地运行的 OpenClaw 会话管理器，提供明亮简洁的管理界面。
+**A lightweight, local-first interface for managing OpenClaw sessions.**
 
-## 项目背景
+Keep your existing OpenClaw setup. Keep your session data on your machine.
 
-OpenClaw 目前缺少一个简洁直观的会话管理界面，查找、重命名或删除会话并不方便。
-如果你不想为了管理会话安装多个第三方 OpenClaw 版本，或希望保持现有 OpenClaw
-环境简洁纯净，可以使用本项目集中管理本机会话。
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Node.js](https://img.shields.io/badge/Node.js-22%2B-5FA04E?logo=nodedotjs&logoColor=white)](package.json)
+[![macOS](https://img.shields.io/badge/macOS-12%2B-000000?logo=apple&logoColor=white)](macos/AppMain.swift)
+[![OpenClaw](https://img.shields.io/badge/OpenClaw-Local-2563EB)](https://github.com/openclaw/openclaw)
 
-<p align="center">
-  <img src="public/openclaw-logo.svg" width="96" alt="OpenClaw logo">
-</p>
+[Features](#features) · [Quick start](#quick-start) · [How it works](#how-it-works) · [Security](#security) · [FAQ](#faq)
 
-## 功能
+</div>
 
-- 查看、搜索并按 Agent 筛选会话
-- 新增会话与修改会话名称
-- 重置上下文、终止当前运行
-- 删除会话，可选择同时删除转录文件
-- 显示会话模型、更新时间及 Token 用量
-- 仅监听 `127.0.0.1`
+## What is OpenClaw Session Manager?
 
-## 平台支持
+OpenClaw Session Manager is a local tool for browsing and maintaining sessions across all of your OpenClaw agents.
 
-| 运行方式 | macOS | Linux | Windows |
-| --- | --- | --- | --- |
-| 原生窗口 `.app` | 支持 | 不支持 | 不支持 |
-| Web 模式 | 支持 | 应可运行，尚未全面测试 | 尚未测试 |
+As the number of sessions grows, finding a session key, checking its model, tracking token usage, or running rename, reset, and delete commands becomes tedious. This project adds a focused graphical interface on top of your existing OpenClaw installation: it reads local sessions and uses the official OpenClaw Gateway API for write operations, without replacing OpenClaw or introducing another distribution.
 
-原生窗口使用 Swift、AppKit 和 WebKit，因此只支持 macOS。核心管理服务使用
-Node.js，结构上不依赖 macOS，但 Linux 和 Windows 仍需要更多实际测试与路径适配。
+## Why use it?
 
-## 环境要求
+| Common problem | How this project helps |
+| --- | --- |
+| Sessions are spread across multiple agents | Browse all agents from one view, with search and filtering |
+| Session keys are hard to recognize | Show labels, keys, agents, models, types, and update times together |
+| Everyday maintenance requires memorizing commands | Rename, reset, abort, and delete from the session card |
+| You do not want another OpenClaw fork installed | Connect directly to the OpenClaw CLI and Gateway you already use |
+| Session data is private | Bind the service to `127.0.0.1` and keep data local |
 
-- OpenClaw 已安装并完成初始化
-- Node.js 22 或更高版本
-- 构建 macOS App：macOS 12+ 与 Xcode Command Line Tools
+## Features
 
-写操作通过 OpenClaw Gateway 官方会话接口执行。如果提示设备配对，请在 OpenClaw
-控制面板的 **Devices / 设备** 页面批准 CLI 设备。
+- **Unified browsing**: View sessions from every agent and see total counts.
+- **Fast discovery**: Search by label, session key, model, or channel; filter by agent.
+- **At-a-glance status**: See model, session kind, last update time, and token usage.
+- **Session maintenance**: Create sessions and set or clear display labels.
+- **Runtime control**: Reset context or abort the current run.
+- **Safer deletion**: Confirm destructive actions and optionally remove the transcript file too.
+- **Two ways to run**: Use a native macOS window or open the local Web UI in a browser.
 
-## Web 模式
+## Quick start
+
+### Prerequisites
+
+- [OpenClaw](https://github.com/openclaw/openclaw) installed and initialized
+- Node.js 22 or later
+- For the macOS app: macOS 12 or later and Xcode Command Line Tools
+
+### Option 1: Web mode
 
 ```bash
+git clone https://github.com/xiaoninemao/openclaw-session-manager.git
+cd openclaw-session-manager
 npm start
 ```
 
-然后访问 <http://127.0.0.1:43110>。
+Open [http://127.0.0.1:43110](http://127.0.0.1:43110) in your browser.
 
-如 OpenClaw CLI 不在常见路径：
+The project has no third-party npm runtime dependencies, so `npm install` is not required.
+
+If the OpenClaw CLI is not in one of the standard locations, provide its path explicitly:
 
 ```bash
 OPENCLAW_CLI=/path/to/openclaw npm start
 ```
 
-## 构建 macOS App
+To use a different local port:
+
+```bash
+PORT=43111 npm start
+```
+
+### Option 2: Native macOS app
+
+Build the app bundle:
 
 ```bash
 npm run build:macos
 ```
 
-应用生成于：
+The bundle is created at:
 
 ```text
 build/OpenClaw 会话管理器.app
 ```
 
-构建并安装到 `/Applications`：
+Build and install it into `/Applications`:
 
 ```bash
 npm run install:macos
 ```
 
-构建脚本会从 SVG Logo 自动生成应用图标。macOS App 使用本机签名，仅用于本地运行。对外分发时应使用 Apple Developer
-证书签名并进行公证。
+The app starts the local Node.js service and loads the UI in a native WebKit window. It is signed with an ad-hoc local signature for personal use. For public distribution, sign and notarize it with an Apple Developer certificate.
 
-## 项目结构
+## Platform support
+
+| Run mode | macOS | Linux | Windows |
+| --- | --- | --- | --- |
+| Native `.app` | ✅ Supported | — | — |
+| Web mode | ✅ Supported | 🧪 Should run; more testing needed | 🧪 Testing and path adaptations needed |
+
+The native app uses AppKit and WebKit, so it is macOS-only. The Web service is built with Node.js and does not depend on macOS at its core, but macOS is currently the primary tested platform.
+
+## How it works
 
 ```text
-public/               Web UI
-server.mjs            本地服务与 OpenClaw CLI/Gateway 适配
-macos/                原生 macOS WebKit 窗口
-scripts/              构建与安装脚本
+Browser / native macOS app
+             │
+             │ HTTP (127.0.0.1 only)
+             ▼
+       Local Node.js service
+             │
+             ├── openclaw sessions --all-agents   read sessions
+             ├── ~/.openclaw/agents/...            resolve local labels
+             └── openclaw gateway call             create and mutate
+                              │
+                              ▼
+                       OpenClaw Gateway
 ```
 
-## 安全说明
+- **Web UI** handles the session list, search, filters, statistics, and confirmations.
+- **Local service** locates the OpenClaw CLI, aggregates sessions, and maps UI actions to Gateway calls.
+- **macOS shell** starts the service and provides a native window. Closing the window terminates the service process started by the app.
 
-- 服务仅绑定本机回环地址。
-- 不会将 OpenClaw 会话数据发送到外部服务器。
-- 删除和重置属于破坏性操作，执行前会要求确认。
+## Repository layout
+
+```text
+openclaw-session-manager/
+├── public/               # Web UI, styles, and browser logic
+├── macos/                # AppKit + WebKit native app shell
+├── scripts/              # macOS build and install scripts
+├── server.mjs            # Local HTTP service and OpenClaw adapter
+└── package.json          # Run, check, and build commands
+```
+
+## Development
+
+Start the local service:
+
+```bash
+npm start
+```
+
+Check the server and browser JavaScript syntax:
+
+```bash
+npm run check
+```
+
+## Security
+
+- The service binds to the loopback address `127.0.0.1`; it does not listen on your LAN or the public internet.
+- Session data is not sent to an external server by this project.
+- Write operations are performed by the OpenClaw Gateway and follow OpenClaw's device authorization flow.
+- Reset and delete are destructive actions and require confirmation in the UI.
+- If you choose to delete the transcript as well, the related record may not be recoverable.
+
+## FAQ
+
+### “OpenClaw CLI not found”
+
+Make sure OpenClaw is installed, or provide the executable's absolute path:
+
+```bash
+OPENCLAW_CLI=/absolute/path/to/openclaw npm start
+```
+
+### “pairing required”
+
+Open the OpenClaw control panel, approve the CLI device on the **Devices** page, and refresh the manager.
+
+### The macOS app cannot start the service
+
+Make sure `node` and `openclaw` are available in a standard path, then inspect the log:
+
+```text
+~/Library/Logs/OpenClaw Session Manager.log
+```
+
+### Port `43110` is already in use
+
+Web mode supports a custom port through `PORT`. The macOS app currently uses `43110`; stop the process using that port before launching it again.
+
+## Contributing
+
+Issues and pull requests are welcome, including bug fixes, cross-platform support, UI improvements, and documentation updates. Before opening a pull request, run:
+
+```bash
+npm run check
+```
 
 ## License
 
-[MIT](LICENSE)
+This project is released under the [MIT License](LICENSE).
